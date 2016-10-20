@@ -51,8 +51,6 @@ def main(args):
     count += 1
     if count == 100:
       break
-    print ('\r[%d/%d]' % (count, len(sha1_to_release))),
-  print 'done!'
 
   return 0
 

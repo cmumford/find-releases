@@ -23,9 +23,10 @@ def VersionPredicate(release_str):
   return (int(parts[0]), int(parts[1]), int(parts[2]), int(parts[3]))
 
 
-def main():
+def main(args):
+  root = args[0]
   try:
-    with open('cache.pickle', 'rb') as f:
+    with open(os.path.join(root, 'cache.pickle'), 'rb') as f:
       cache = cPickle.load(f)
   except:
     cache = {}
@@ -100,7 +101,7 @@ def main():
   cache['commit_merged_as'] = commit_merged_as
 
   try:
-    with open('cache.pickle', 'wb') as f:
+    with open(os.path.join(root, 'cache.pickle'), 'wb') as f:
       cPickle.dump(cache, f)
   except Exception as e:
     print >>sys.stderr, 'Failed to save cache', e
@@ -109,4 +110,4 @@ def main():
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+  sys.exit(main(sys.argv[1:]))
