@@ -96,8 +96,7 @@ def main():
     mo = re.match('\(cherry picked from commit ([0-9a-f]{40})\)', line)
     if mo:
       commit_merged_as.setdefault(mo.group(1), []).append(current_commit)
-
-  pprint.pprint(commit_merged_as)
+  cache['commit_merged_as'] = commit_merged_as
 
   try:
     with open('cache.pickle', 'wb') as f:
