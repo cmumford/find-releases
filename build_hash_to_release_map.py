@@ -33,6 +33,7 @@ def main():
   cache.setdefault('release_sha1s', {})
   cache.setdefault('sha1_to_release', {})
 
+  # Get SHA1s for tags.
   prev_tag_to_sha1 = cache['tag_to_sha1']
   new_tag_to_sha1 = {}
   for tag in Git('show-ref', '--tags').splitlines():
@@ -47,6 +48,7 @@ def main():
       continue
     new_tag_to_sha1[release] = sha1
 
+  # Figure out if any tags have changed (or the new ones).
   new_tags = set(new_tag_to_sha1.keys())
   prev_tags = set(prev_tag_to_sha1.keys())
   intersect = new_tags.intersection(prev_tags)
@@ -59,6 +61,7 @@ def main():
 
   ordered_releases = sorted(new_tag_to_sha1.keys(), key=VersionPredicate)
 
+  # Get the commits that are in all changed tags.
   release_sha1s = cache['release_sha1s']
   caret_prefix = '^^^^' if IS_WIN else '^'
   for i in range(len(ordered_releases) - 1):
@@ -70,12 +73,31 @@ def main():
       release_sha1s[tag] = sha1s
   cache['release_sha1s'] = release_sha1s
 
+  # Invert to get a hash -> release number dict.
   print 'inverting...'
   sha1_to_release = {}
   for rel, hashes in release_sha1s.iteritems():
     for h in hashes:
       sha1_to_release[h] = rel
   cache['sha1_to_release'] = sha1_to_release
+
+  # Walk commit messages with the "cherry picked" annotation to try to gather
+  # useful information on merges.
+  print 'getting merge information...'
+  current_commit = None
+  commit_prefix = '!!!COMMIT!!!'
+  commit_merged_as = {}
+  for line in Git('log', '-F', '--all', '--no-abbrev', '--grep',
+                  'cherry picked from commit',
+                  '--pretty=' + commit_prefix + '%H%n%b').splitlines():
+    if line.startswith(commit_prefix):
+      current_commit = line[len(commit_prefix):]
+      continue
+    mo = re.match('\(cherry picked from commit ([0-9a-f]{40})\)', line)
+    if mo:
+      commit_merged_as.setdefault(mo.group(1), []).append(current_commit)
+
+  pprint.pprint(commit_merged_as)
 
   try:
     with open('cache.pickle', 'wb') as f:
