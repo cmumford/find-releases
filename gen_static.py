@@ -34,7 +34,6 @@ def main(args):
   sha1_to_release = cache['sha1_to_release']
   commit_merged_as = cache['commit_merged_as']
   count = 0
-  print 'generating %d static html files...' % len(sha1_to_release)
   for commit in sha1_to_release:
     output_path = PathForCommit(commit)
     with open(output_path, 'wb') as f:
@@ -51,8 +50,8 @@ def main(args):
               sha1_to_release.get(merge, '???'), merge, merge)
       print >>f, '</pre></body>'
     count += 1
-    if count == 100:
-      break
+    print ('\r%d/%d' % (count, len(sha1_to_release))),
+  print '\rdone'
 
   return 0
 
