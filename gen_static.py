@@ -16,7 +16,8 @@ def PathForCommit(commit):
 
 def main(args):
   global ROOT
-  ROOT = args[0]
+  pickle = args[0]
+  OUTPUT = args[1]
 
   for i in range(256):
     path = os.path.join(ROOT, '%02x' % i)
@@ -24,7 +25,7 @@ def main(args):
       os.makedirs(path)
 
   try:
-    with open('cache.pickle', 'rb') as f:
+    with open(pickle, 'rb') as f:
       cache = cPickle.load(f)
   except:
     print >>sys.stderr, 'couldn\'t load cached data'
