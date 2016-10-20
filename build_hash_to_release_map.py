@@ -41,9 +41,6 @@ def main():
       print 'ignoring', long_tag_name
       continue
     release = long_tag_name[len(prefix):]
-    if not release.startswith('54.'):
-      # TODO: HACK TESTING
-      continue
     if not re.match(r'\d+\.\d+\.\d+\.\d+', release):
       print 'skipping non-releasey', release
       continue
@@ -55,6 +52,7 @@ def main():
   changed_tags = set(o for o in intersect
                      if prev_tag_to_sha1[o] != new_tag_to_sha1[o])
   new_tags = new_tags - intersect
+  print (len(changed_tags) + len(new_tags)), "tags to update..."
 
   cache['tag_to_sha1'] = new_tag_to_sha1
 
@@ -65,6 +63,7 @@ def main():
   for i in range(len(ordered_releases) - 1):
     tag = ordered_releases[i+1]
     if tag in changed_tags or tag in new_tags:
+      print '\r' + tag,
       sha1s = Git('log', caret_prefix + ordered_releases[i],
                   ordered_releases[i+1], '--format=%H').split('\n')
       release_sha1s[tag] = sha1s
