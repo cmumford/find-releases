@@ -31,6 +31,7 @@ def main():
     cache = {}
   cache.setdefault('tag_to_sha1', {})
   cache.setdefault('release_sha1s', {})
+  cache.setdefault('sha1_to_release', {})
 
   prev_tag_to_sha1 = cache['tag_to_sha1']
   new_tag_to_sha1 = {}
@@ -68,6 +69,12 @@ def main():
                   ordered_releases[i+1], '--format=%H').split('\n')
       release_sha1s[tag] = sha1s
   cache['release_sha1s'] = release_sha1s
+
+  sha1_to_release = {}
+  for rel, hashes in release_sha1s.iteritems():
+    for h in hashes:
+      sha1_to_release[h] = rel
+  cache['sha1_to_release'] = sha1_to_release
 
   try:
     with open('cache.pickle', 'wb') as f:
