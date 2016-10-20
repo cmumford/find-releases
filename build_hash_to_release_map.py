@@ -70,6 +70,7 @@ def main():
       release_sha1s[tag] = sha1s
   cache['release_sha1s'] = release_sha1s
 
+  print 'inverting...'
   sha1_to_release = {}
   for rel, hashes in release_sha1s.iteritems():
     for h in hashes:
