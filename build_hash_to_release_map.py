@@ -71,6 +71,7 @@ def main():
       sha1s = Git('log', caret_prefix + ordered_releases[i],
                   ordered_releases[i+1], '--format=%H').split('\n')
       release_sha1s[tag] = sha1s
+  print 'done tags'
   cache['release_sha1s'] = release_sha1s
 
   # Invert to get a hash -> release number dict.
