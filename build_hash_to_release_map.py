@@ -25,6 +25,8 @@ def VersionPredicate(release_str):
 
 def main(args):
   root = args[0]
+  if not os.path.exists(root):
+    os.makedirs(root)
   try:
     with open(os.path.join(root, 'cache.pickle'), 'rb') as f:
       cache = cPickle.load(f)
