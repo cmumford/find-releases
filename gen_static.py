@@ -76,8 +76,9 @@ def main(args):
                                     merge])
 
     output_path = os.path.join(ROOT, bucket + '.html')
-    if WriteIfChanged(output_path,
-                      TEMPLATE % 'data=' + json.dumps(data_obj)):
+    to_write = TEMPLATE % ('data=' + json.dumps(data_obj, sort_keys=True,
+                                                separators=(',',':')))
+    if WriteIfChanged(output_path, to_write):
       count += 1
   print 'updated %d files.' % count
 
