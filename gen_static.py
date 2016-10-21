@@ -12,7 +12,7 @@ import sys
 SELF_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = None
 
-def WriteIfUnchanged(output_path, contents):
+def WriteIfChanged(output_path, contents):
   old_contents = ''
   if os.path.exists(output_path):
     with open(output_path, 'rb') as f:
@@ -68,15 +68,15 @@ def main(args):
   count = 0
   for bucket, commits in partitioned.iteritems():
     data_obj = {}
-    for commit in commits:
+    for commit in sorted(commits):
       data_obj[commit] = [sha1_to_release[commit], []]
-      for merge in commit_merged_as.get(commit, []):
+      for merge in sorted(commit_merged_as.get(commit, [])):
         data_obj[commit][1].append([sha1_to_release.get(merge, '???'),
                                     merge])
 
     output_path = os.path.join(ROOT, bucket + '.html')
-    if WriteIfUnchanged(output_path,
-                        TEMPLATE % 'data=' + json.dumps(data_obj)):
+    if WriteIfChanged(output_path,
+                      TEMPLATE % 'data=' + json.dumps(data_obj)):
       count += 1
   print 'updated %d files.' % count
 
