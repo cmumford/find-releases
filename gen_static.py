@@ -19,7 +19,7 @@ def WriteIfUnchanged(output_path, contents):
       old_contents = f.read()
   if old_contents != contents:
     with open(output_path, 'wb') as f:
-      print >>f, contents
+      f.write(contents)
 
 
 def main(args):
