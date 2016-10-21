@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
 # Presumed to be running from find-releases git dir...
 git fetch origin
 git checkout origin/master
