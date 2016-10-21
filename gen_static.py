@@ -51,14 +51,12 @@ def main(args):
   TEMPLATE = '''<!DOCTYPE html><html><head>''' \
              '''<style>''' \
              '''body{font-family:'Helvetica','Arial',sans-serif;}''' \
-             '''footer{font-size:smaller;}''' \
              '''a,code{font-family:'Monaco','Consolas',monospace;}''' \
              '''</style>''' \
              '''<script src="handler.js"></script>''' \
              '''<script>%s</script>''' \
              '''<body onload="go()">''' \
              '''<div id="content"></div>''' \
-             '''<footer>Data updated at %s.</footer>''' \
              '''</body></html>'''
 
   if not os.path.exists(ROOT):
@@ -75,7 +73,7 @@ def main(args):
 
     output_path = os.path.join(ROOT, bucket + '.html')
     WriteIfUnchanged(output_path,
-                     TEMPLATE % ('data=' + json.dumps(data_obj), data_updated))
+                     TEMPLATE % 'data=' + json.dumps(data_obj))
 
   shutil.copy2(os.path.join(SELF_DIR, 'handler.js'),
                os.path.join(ROOT, 'handler.js'))
