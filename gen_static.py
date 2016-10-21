@@ -12,6 +12,15 @@ import sys
 SELF_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = None
 
+def WriteIfUnchanged(output_path, contents):
+  old_contents = ''
+  if os.path.exists(output_path):
+    with open(output_path, 'rb') as f:
+      old_contents = f.read()
+  if old_contents != contents:
+    with open(output_path, 'wb') as f:
+      print >>f, TEMPLATE % ('data=' + json.dumps(data_obj), data_updated)
+
 
 def main(args):
   global ROOT
@@ -65,11 +74,11 @@ def main(args):
                                     merge])
 
     output_path = os.path.join(ROOT, bucket + '.html')
-    with open(output_path, 'wb') as f:
-      print >>f, TEMPLATE % ('data=' + json.dumps(data_obj), data_updated)
+    WriteIfUnchanged(output_path,
+                     TEMPLATE % ('data=' + json.dumps(data_obj), data_updated))
 
-  shutil.copy(os.path.join(SELF_DIR, 'handler.js'),
-              os.path.join(ROOT, 'handler.js'))
+  shutil.copy2(os.path.join(SELF_DIR, 'handler.js'),
+               os.path.join(ROOT, 'handler.js'))
 
   return 0
 
