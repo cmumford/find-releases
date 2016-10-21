@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+# Presumed to be running from find-releases git dir...
+git fetch origin
+git checkout origin/master
+
+# ... that's next to a chromium src tree named 'cr'.
+cd ../cr/src
+git fetch origin
+git checkout origin/master
+
+# ... with depot_tools in the path.
+gclient sync --with_branch_heads --nohooks
+
+# ... output is stored beside both of those.
+python ../../find-releases/build_hash_to_release_map.py ../../find-releases-output
+python ../../find-releases/gen_static.py ../../find-releases-output/cache.pickle ../../find-releases-output/static
+
+cd ../../find-releases-output/static
+gsutil -m rsync -d -r . gs://chromium-find-releases-static/

@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import cPickle
+import datetime
 import os
-import pprint
 import re
 import subprocess
 import sys
@@ -33,6 +33,7 @@ def main(args):
   cache.setdefault('tag_to_sha1', {})
   cache.setdefault('release_sha1s', {})
   cache.setdefault('sha1_to_release', {})
+  cache['data_updated'] = str(datetime.datetime.now())
 
   # Get SHA1s for tags.
   prev_tag_to_sha1 = cache['tag_to_sha1']

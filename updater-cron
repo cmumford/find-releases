@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PIDFILE="$DIR/find-releases-updater.pid"
+
+if [ -e "${PIDFILE}" ] && (ps -u $(whoami) -opid= |
+                           grep -P "^\s*$(cat ${PIDFILE})$" &> /dev/null); then
+  echo "Already running."
+  exit 99
+fi
+
+cd $DIR
+./update-find-releases-static > ./find-releases-updater.log &
+
+echo $! > "${PIDFILE}"
+chmod 644 "${PIDFILE}"

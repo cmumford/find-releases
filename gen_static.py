@@ -3,15 +3,14 @@
 # found in the LICENSE file.
 
 import cPickle
+import json
 import os
+import shutil
 import sys
 
 
+SELF_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = None
-
-
-def PathForCommit(commit):
-  return os.path.join(ROOT, commit[0:2], commit[2:] + '.html')
 
 
 def main(args):
@@ -19,11 +18,7 @@ def main(args):
   pickle = args[0]
   ROOT = args[1]
 
-  for i in range(256):
-    path = os.path.join(ROOT, '%02x' % i)
-    if not os.path.exists(path):
-      os.makedirs(path)
-
+  print 'loading...'
   try:
     with open(pickle, 'rb') as f:
       cache = cPickle.load(f)
@@ -33,25 +28,48 @@ def main(args):
 
   sha1_to_release = cache['sha1_to_release']
   commit_merged_as = cache['commit_merged_as']
-  count = 0
-  for commit in sha1_to_release:
-    output_path = PathForCommit(commit)
+  data_updated = cache['data_updated']
+
+  print 'paritioning...'
+  partitioned = {}
+  for commit in sorted(sha1_to_release):
+    if not commit:
+      continue
+    bucket = commit[0:3]
+    partitioned.setdefault(bucket, [])
+    partitioned[bucket].append(commit)
+
+  TEMPLATE = '''<!DOCTYPE html><html><head>''' \
+             '''<style>''' \
+             '''body{font-family:'Helvetica','Arial',sans-serif;}''' \
+             '''footer{font-size:smaller;}''' \
+             '''a,code{font-family:'Monaco','Consolas',monospace;}''' \
+             '''</style>''' \
+             '''<script src="handler.js"></script>''' \
+             '''<script>%s</script>''' \
+             '''<body onload="go()">''' \
+             '''<div id="content"></div>''' \
+             '''<footer>Data updated at %s.</footer>''' \
+             '''</body></html>'''
+
+  if not os.path.exists(ROOT):
+    os.makedirs(ROOT)
+
+  print 'generating data files...'
+  for bucket, commits in partitioned.iteritems():
+    data_obj = {}
+    for commit in commits:
+      data_obj[commit] = [sha1_to_release[commit], []]
+      for merge in commit_merged_as.get(commit, []):
+        data_obj[commit][1].append([sha1_to_release.get(merge, '???'),
+                                    merge])
+
+    output_path = os.path.join(ROOT, bucket + '.html')
     with open(output_path, 'wb') as f:
-      print >>f, '<!DOCTYPE html><body><pre>'
-      print >>f, 'commit <a href="https://crrev.com/%s">%s</a> landed in %s' % (
-          commit, commit, sha1_to_release.get(commit, '???'))
-      print >>f, 'Merges:'
-      merges = commit_merged_as.get(commit, [])
-      if not merges:
-        print >>f, '  None found.'
-      else:
-        for merge in merges:
-          print >>f, '  %s (as <a href="https://crrev.com/%s">%s</a>)' % (
-              sha1_to_release.get(merge, '???'), merge, merge)
-      print >>f, '</pre></body>'
-    count += 1
-    print ('\r%d/%d' % (count, len(sha1_to_release))),
-  print '\rdone'
+      print >>f, TEMPLATE % ('data=' + json.dumps(data_obj), data_updated)
+
+  shutil.copy(os.path.join(SELF_DIR, 'handler.js'),
+              os.path.join(ROOT, 'handler.js'))
 
   return 0
 
