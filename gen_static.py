@@ -20,14 +20,11 @@ def WriteIfChanged(output_path, contents):
       old_contents = f.read()
   if old_contents != contents:
     import difflib
-    print output_path, 'changed!'
-    for line in difflib.unified_diff(old_contents.split('\n'),
-                                     contents.split('\n'),
-                                     fromfile='old', tofile='new'):
-      sys.stdout.write(line)
-    sys.exit(1)
+    print output_path, 'changed!, writing as .new'
+    output_path += '.new'
     with open(output_path, 'wb') as f:
       f.write(contents)
+    sys.exit(1)
     return True
   return False
 
