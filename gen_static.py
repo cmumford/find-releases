@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import cPickle
+import collections
 import json
 import os
 import shutil
@@ -41,7 +42,7 @@ def main(args):
   commit_merged_as = cache['commit_merged_as']
   data_updated = cache['data_updated']
 
-  print 'paritioning...'
+  print 'partitioning...'
   partitioned = {}
   for commit in sorted(sha1_to_release):
     if not commit:
@@ -67,7 +68,7 @@ def main(args):
   print 'generating data files...'
   count = 0
   for bucket, commits in partitioned.iteritems():
-    data_obj = {}
+    data_obj = collections.OrderedDict()
     for commit in sorted(commits):
       data_obj[commit] = [sha1_to_release[commit], []]
       for merge in sorted(commit_merged_as.get(commit, [])):
