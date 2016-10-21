@@ -20,6 +20,8 @@ def WriteIfUnchanged(output_path, contents):
   if old_contents != contents:
     with open(output_path, 'wb') as f:
       f.write(contents)
+    return True
+  return False
 
 
 def main(args):
@@ -63,6 +65,7 @@ def main(args):
     os.makedirs(ROOT)
 
   print 'generating data files...'
+  count = 0
   for bucket, commits in partitioned.iteritems():
     data_obj = {}
     for commit in commits:
@@ -72,8 +75,11 @@ def main(args):
                                     merge])
 
     output_path = os.path.join(ROOT, bucket + '.html')
-    WriteIfUnchanged(output_path,
-                     TEMPLATE % 'data=' + json.dumps(data_obj))
+    if WriteIfUnchanged(output_path,
+                        TEMPLATE % 'data=' + json.dumps(data_obj)):
+      count += 1
+  print 'updated %d files.' % count
+
 
   shutil.copy2(os.path.join(SELF_DIR, 'handler.js'),
                os.path.join(ROOT, 'handler.js'))
