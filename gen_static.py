@@ -40,7 +40,6 @@ def main(args):
 
   sha1_to_release = cache['sha1_to_release']
   commit_merged_as = cache['commit_merged_as']
-  data_updated = cache['data_updated']
 
   print 'partitioning...'
   partitioned = {}
