@@ -62,6 +62,8 @@ def main(args):
       if mo:
         if int(mo.group(1)) < 1900:
           blacklist[commit] = trailing_tilde_re.sub('', name)
+      else:
+        print 'not saving', commit, name
 
   cache['sha1_to_release'] = sha1_to_release
   cache['blacklist'] = blacklist
