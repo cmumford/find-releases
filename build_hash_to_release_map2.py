@@ -40,13 +40,17 @@ def main(args):
   print 'getting revs for %d commits...' % len(revs_to_get)
   p = subprocess.Popen(['xargs', 'git', 'name-rev'], shell=False,
                        stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+  named_revs = p.communicate('\n'.join(revs_to_get))[0]
   print 'munging output...'
-  for line in p.communicate('\n'.join(revs_to_get))[0].splitlines():
+  trailing_tilde_re = re.compile(r'~.*$')
+  for line in named_revs.splitlines():
     commit, _, name = line.partition(' ')
     # We want the tags, keep the ignore/foos too as we don't want them, but
     # we don't want to keep looking them up, either.
-    if name.startswith('remotes/origin/ignore/foo') or name.startswith('tags/'):
-      sha1_to_release[commit] = re.sub(r'~.*$', '', name)
+    if name.startswith('tags/'):
+      sha1_to_release[commit] = trailing_tilde_re.sub('', name[5:])
+    if name.startswith('remotes/origin/ignore/foo'):
+      sha1_to_release[commit] = trailing_tilde_re.sub('', name)
   cache['sha1_to_release'] = sha1_to_release
 
   # TODO: Invalidate if tags updated.

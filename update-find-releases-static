@@ -14,7 +14,7 @@ git fetch origin
 git checkout origin/master
 
 # ... with depot_tools in the path.
-#gclient sync --with_branch_heads --nohooks
+gclient sync --with_branch_heads --nohooks
 
 # ... output is stored beside both of those.
 python ../../find-releases/build_hash_to_release_map2.py ../../find-releases-output
