@@ -34,10 +34,10 @@ def main(args):
 
   sha1_to_release = cache['sha1_to_release']
   print 'retrieving list of commits...'
-  # If this crashes, `ulimit -s unlimited`.
-  revs = set(Git('rev-list', '--all').splitlines())
+  revs = set(Git('rev-list', '--all', '--after=\'24 months ago\'').splitlines())
   have_rev_data = set(sha1_to_release.keys())
   revs_to_get = revs - have_rev_data
+  # If this crashes, `ulimit -s unlimited`.
   print 'getting revs for %d commits...' % len(revs_to_get)
   p = subprocess.Popen(['xargs', 'git', 'name-rev'], shell=False,
                        stdin=subprocess.PIPE, stdout=subprocess.PIPE)
