@@ -34,7 +34,7 @@ def main(args):
 
   sha1_to_release = cache['sha1_to_release']
   print 'retrieving list of commits...'
-  revs = set(Git('rev-list', '--all', '--after=\'36 months ago\'').splitlines())
+  revs = set(Git('rev-list', '--all', '--after=\'48 months ago\'').splitlines())
   have_rev_data = set(sha1_to_release.keys())
   revs_to_get = revs - have_rev_data
   # If this crashes, `ulimit -s unlimited`.
