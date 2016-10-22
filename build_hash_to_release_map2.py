@@ -15,7 +15,7 @@ def Git(*args):
 
 
 def main(args):
-  if Git('branch').splitlines() != 1:
+  if len(Git('branch').splitlines()) != 1:
     print 'WARNING: should not have any local branches in this repo copy.'
     print 'WARNING: Commits will be assigned to branches, rather than tags.'
     print 'WARNING: Continuing anyway...'
