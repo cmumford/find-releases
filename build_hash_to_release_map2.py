@@ -31,12 +31,15 @@ def main(args):
     cache = {}
   cache.setdefault('sha1_to_release', {})
   cache.setdefault('commit_merged_as', {})
+  cache.setdefault('blacklist', {})
 
   sha1_to_release = cache['sha1_to_release']
+  blacklist = cache['blacklist']
   print 'retrieving list of commits...'
   revs = set(Git('rev-list', '--all', '--after=\'48 months ago\'').splitlines())
   have_rev_data = set(sha1_to_release.keys())
-  revs_to_get = revs - have_rev_data
+  blacklist_revs = set(blacklist.keys())
+  revs_to_get = revs - have_rev_data - blacklist_revs
   # If this crashes, `ulimit -s unlimited`.
   print 'getting revs for %d commits...' % len(revs_to_get)
   p = subprocess.Popen(['xargs', 'git', 'name-rev'], shell=False,
@@ -44,15 +47,24 @@ def main(args):
   named_revs = p.communicate('\n'.join(revs_to_get))[0]
   print 'munging output...'
   trailing_tilde_re = re.compile(r'~.*$')
+  branch_heads_re = re.compile(r'remotes\/branch-heads\/(\d+)~.*$')
   for line in named_revs.splitlines():
     commit, _, name = line.partition(' ')
     # We want the tags, keep the ignore/foos too as we don't want them, but
     # we don't want to keep looking them up, either.
     if name.startswith('tags/'):
       sha1_to_release[commit] = trailing_tilde_re.sub('', name[5:])
-    if name.startswith('remotes/origin/ignore/foo'):
-      sha1_to_release[commit] = trailing_tilde_re.sub('', name)
+    elif (name.startswith('remotes/origin/ignore/') or
+          name.startswith('remotes/branch-heads/git-svn~')):
+      blacklist[commit] = trailing_tilde_re.sub('', name)
+    else:
+      mo = branch_heads_re.match(name)
+      if mo:
+        if int(mo.group(1)) < 1900:
+          blacklist[commit] = trailing_tilde_re.sub('', name)
+
   cache['sha1_to_release'] = sha1_to_release
+  cache['blacklist'] = blacklist
 
   # TODO: Invalidate if tags updated.
 
