@@ -16,6 +16,10 @@ git checkout origin/master
 # ... with depot_tools in the path.
 gclient sync --with_branch_heads --nohooks
 
+# git name-rev sort of sucks at large-ish repos? Or the weird svn merge thing
+# we did circa 2014? Not sure. This avoids the problem though.
+ulimit -s unlimited
+
 # ... output is stored beside both of those.
 python ../../find-releases/build_hash_to_release_map2.py ../../find-releases-output
 python ../../find-releases/gen_static.py ../../find-releases-output/cache.pickle ../../find-releases-output/static
