@@ -71,9 +71,14 @@ def main(args):
   for i in range(len(ordered_releases) - 1):
     tag = ordered_releases[i+1]
     if tag in changed_tags or tag in new_tags:
-      print '\r' + tag,
+      print '\33[2K\r' + tag,
       sha1s = Git('log', caret_prefix + ordered_releases[i],
-                  ordered_releases[i+1], '--format=%H').split('\n')
+                  ordered_releases[i+1], '--format=%H').split('\n')[:-1]
+      for sha1 in sha1s:
+        if not sha1.strip():
+          print >>sys.stderr, ('\nempty sha1 for %s..%s' %
+              (ordered_releases[i], ordered_releases[i+1]))
+          sys.exit(1)
       release_sha1s[tag] = sha1s
   print 'done tags'
   cache['release_sha1s'] = release_sha1s
@@ -83,6 +88,9 @@ def main(args):
   sha1_to_release = {}
   for rel, hashes in release_sha1s.iteritems():
     for h in hashes:
+      if h in sha1_to_release:
+        print >>sys.stderr, '%s already %s, about to set to %s!' % (
+            h, sha1_to_release[h], rel)
       sha1_to_release[h] = rel
   cache['sha1_to_release'] = sha1_to_release
 

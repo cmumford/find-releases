@@ -19,12 +19,8 @@ def WriteIfChanged(output_path, contents):
     with open(output_path, 'rb') as f:
       old_contents = f.read()
   if old_contents != contents:
-    import difflib
-    print output_path, 'changed!, writing as .new'
-    output_path += '.new'
     with open(output_path, 'wb') as f:
       f.write(contents)
-    sys.exit(1)
     return True
   return False
 
@@ -49,8 +45,6 @@ def main(args):
   print 'partitioning...'
   partitioned = {}
   for commit in sorted(sha1_to_release):
-    if not commit:
-      continue
     bucket = commit[0:3]
     partitioned.setdefault(bucket, [])
     partitioned[bucket].append(commit)
