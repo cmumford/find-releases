@@ -20,7 +20,7 @@ function go() {
         if (data.hasOwnProperty(candidate)) {
           if (candidate.startsWith(commit)) {
             if (commit_data) {
-              html_data += '<p>' + commit ' is ambiguous.</p>';
+              html_data += '<p>' + commit + ' is ambiguous.</p>';
               commit_data = null;
               break;
             }

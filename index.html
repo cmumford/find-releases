@@ -1,0 +1,15 @@
+<!DOCTYPE html><html><head><style>body{font-family:'Helvetica','Arial',sans-serif;}a,code{font-family:'Monaco','Consolas',monospace;}</style><script>
+function submit() {
+  var commit = document.getElementById('commit');
+  var prefix = commit.substr(0, 3);
+  window.location = '/' + prefix + '.html#' + commit);
+}
+</script>
+<body>
+  <h1>Find Releases</h1>
+  <form onsubmit="submit()">
+    git SHA-1 commit:<br>
+    <input type="text" id="commit" name="commit"><br>
+    <input type="submit" value="Lookup">
+  </form>
+</body></html>
