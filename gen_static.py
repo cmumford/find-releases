@@ -79,10 +79,10 @@ def main(args):
       count += 1
   print 'updated %d files.' % count
 
-
   shutil.copy2(os.path.join(SELF_DIR, 'handler.js'),
                os.path.join(ROOT, 'handler.js'))
-
+  shutil.copy2(os.path.join(SELF_DIR, 'index.html'),
+               os.path.join(ROOT, 'index.html'))
   return 0
 
 
