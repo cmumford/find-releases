@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+import uuid
 
 
 def Git(*args):
@@ -16,9 +17,15 @@ def Git(*args):
 
 def main(args):
   if len(Git('branch').splitlines()) != 1:
-    print 'WARNING: should not have any local branches in this repo copy.'
-    print 'WARNING: Commits will be assigned to branches, rather than tags.'
-    print 'WARNING: Continuing anyway...'
+    print 'WARNING: Should not have any local branches in this repo copy.'
+    print 'WARNING: Commits will be assigned to branches, rather than release '
+    print 'WARNING: tags.'
+    print 'WARNING: Continuing anyway...\n'
+  if 'remotes/branch-heads/' in Git('branch', '-a'):
+    print 'WARNING: Should not have branch-heads (--with_branch_heads) in this'
+    print 'WARNING: repo copy. Commits will be assigned to branch versions'
+    print 'WARNING: rather than release tags.'
+    print 'WARNING: Continuing anyway...\n'
 
   root = args[0]
   if not os.path.exists(root):
@@ -55,15 +62,11 @@ def main(args):
     if name.startswith('tags/'):
       sha1_to_release[commit] = trailing_tilde_re.sub('', name[5:])
     elif (name.startswith('remotes/origin/ignore/') or
-          name.startswith('remotes/branch-heads/git-svn~')):
+          name.startswith('remotes/branch-heads/git-svn~') or
+          name.startswith('remotes/origin/infra/config~')):
       blacklist[commit] = trailing_tilde_re.sub('', name)
     else:
-      mo = branch_heads_re.match(name)
-      if mo:
-        if int(mo.group(1)) < 1900:
-          blacklist[commit] = trailing_tilde_re.sub('', name)
-      else:
-        print 'not saving', commit, name
+      print 'not saving', commit, name
 
   cache['sha1_to_release'] = sha1_to_release
   cache['blacklist'] = blacklist
@@ -74,7 +77,7 @@ def main(args):
   # useful information on merges.
   print 'getting merge information...'
   current_commit = None
-  commit_prefix = '!!!COMMIT!!!'
+  commit_prefix = str(uuid.uuid1())
   commit_merged_as = {}
   for line in Git('log', '-F', '--all', '--no-abbrev', '--grep',
                   'cherry picked from commit',

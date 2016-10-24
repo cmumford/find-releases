@@ -14,7 +14,9 @@ git fetch origin
 git checkout origin/master
 
 # ... with depot_tools in the path.
-gclient sync --with_branch_heads --nohooks
+# We don't want this -- remotes/branch-heads will cause name-rev to be assigned
+# to those branches, rather than release tags.
+# gclient sync --with_branch_heads --nohooks
 
 # git name-rev sort of sucks at large-ish repos? Or the weird svn merge thing
 # we did circa 2014? Not sure. This avoids the problem though.
