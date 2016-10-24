@@ -63,7 +63,7 @@ def main(args):
       sha1_to_release[commit] = trailing_tilde_re.sub('', name[5:])
     elif (name.startswith('remotes/origin/ignore/') or
           name.startswith('remotes/branch-heads/git-svn~') or
-          name.startswith('remotes/origin/infra/config~')):
+          name.startswith('remotes/origin/infra/config')):
       blacklist[commit] = trailing_tilde_re.sub('', name)
     else:
       print 'not saving', commit, name
