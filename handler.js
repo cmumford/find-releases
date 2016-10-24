@@ -8,13 +8,32 @@ function go() {
   var wrap_commit = function(commit) {
     return '<a href="https://crrev.com/' + commit + '">' + commit.substr(0, 8) + '...</a>';
   }
+  var html_data = '';
   if (window.location.hash) {
     var commit = window.location.hash.substring(1);
+    var commit_data = null;
     if (!data.hasOwnProperty(commit)) {
-      p.innerHTML = 'commit ' + wrap_commit(commit) + ' data not found';
+      var html_data = '<p>commit ' + wrap_commit(commit) + ' data not found</p>';
+      html_data += '<p>looking through prefix short commits...</p>';
+      // See if the given commit was just the beginning of a full SHA1.
+      for (var candidate in data) {
+        if (data.hasOwnProperty(candidate)) {
+          if (candidate.startsWith(commit)) {
+            if (commit_data) {
+              html_data += '<p>' + commit ' is ambiguous.</p>';
+              commit_data = null;
+              break;
+            }
+            commit_data = data[candidate];
+          }
+        }
+      }
     } else {
       var commit_data = data[commit];
-      var html_data = '<p>commit ' + wrap_commit(commit);
+    }
+
+    if (commit_data) {
+      html_data += '<p>commit ' + wrap_commit(commit);
       html_data += ' initially landed in <code>' + commit_data[0] + '</code></p>';
       var num_merges = commit_data[1].length;
       if (num_merges == 0) {
@@ -28,10 +47,10 @@ function go() {
         }
         html_data += '</ul>';
       }
-      p.innerHTML = html_data;
     }
   } else {
-    p.innerHTML = 'no commit specified';
+    html_data = 'no commit specified';
   }
+  p.innerHTML = html_data;
   content.appendChild(p);
 }
