@@ -3,6 +3,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
+echo `date` > last-run-started
 
 # Presumed to be running from find-releases git dir...
 git fetch origin
@@ -28,3 +29,6 @@ python ../../find-releases/gen_static.py ../../find-releases-output/cache.pickle
 
 cd ../../find-releases-output/static
 gsutil -m rsync -d -r . gs://chromium-find-releases-static/
+
+cd $DIR
+echo `date` > last-run-finished
