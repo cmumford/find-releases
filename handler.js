@@ -16,6 +16,7 @@ function go() {
       var html_data = '<p>Commit "' + commit + '" data not found.</p>';
       html_data += '<p>Looking at prefix short commits...</p>';
       // See if the given commit was just the beginning of a full SHA1.
+      var full_commit;
       for (var candidate in data) {
         if (data.hasOwnProperty(candidate)) {
           if (candidate.startsWith(commit)) {
@@ -25,10 +26,11 @@ function go() {
               break;
             }
             commit_data = data[candidate];
-            commit = candidate;
+            full_commit = candidate;
           }
         }
       }
+      commit = full_commit;
     } else {
       var commit_data = data[commit];
     }
