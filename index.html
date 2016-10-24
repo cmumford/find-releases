@@ -2,7 +2,7 @@
 function HandleSubmit(e) {
   var commit = document.getElementById('commit').value;
   var prefix = commit.substr(0, 3);
-  window.location = '/' + prefix + '.html#' + commit;
+  window.location = '/chromium-find-releases-static/' + prefix + '.html#' + commit;
   e.preventDefault();
   return false;
 }
