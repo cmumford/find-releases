@@ -1,14 +1,16 @@
 <!DOCTYPE html><html><head><style>body{font-family:'Helvetica','Arial',sans-serif;}a,code{font-family:'Monaco','Consolas',monospace;}</style><script>
-function submit() {
-  var commit = document.getElementById('commit');
+function HandleSubmit(e) {
+  var commit = document.getElementById('commit').value;
   var prefix = commit.substr(0, 3);
   window.location = '/' + prefix + '.html#' + commit;
+  e.preventDefault();
+  return false;
 }
 </script>
 <body>
   <h1>Find Releases</h1>
-  <form onsubmit="submit()">
-    git SHA-1 commit:<br>
+  <form onsubmit="HandleSubmit(event)">
+    git SHA-1 commit:
     <input type="text" id="commit" name="commit"><br>
     <input type="submit" value="Lookup">
   </form>
