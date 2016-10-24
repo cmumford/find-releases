@@ -25,7 +25,7 @@ function go() {
               break;
             }
             commit_data = data[candidate];
-            commit = candiate;
+            commit = candidate;
           }
         }
       }
