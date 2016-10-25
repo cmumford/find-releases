@@ -9,8 +9,8 @@ function Redir(commit) {
   var number_re = /^r([0-9]+)$/;
   var match = number_re.exec(commit);
   if (match) {
-    document.getElementById('mainform').display = 'none';
-    document.getElementById('predir').display = 'block';
+    document.getElementById('mainform').style.display = 'none';
+    document.getElementById('predir').style.display = 'block';
     var commit_num = match[1];
     function ReqListener() {
       var json = JSON.parse(req.responseText);
@@ -47,7 +47,7 @@ function Go() {
 </script>
 <body onload="Go()">
   <h1>Find Releases</h1>
-  <form id=mainform" onsubmit="HandleSubmit(event)">
+  <form id="mainform" onsubmit="HandleSubmit(event)">
     git SHA-1 commit, or revision number, prefixed by &quot;r&quot;:
     <input type="text" id="commit" name="commit"><br>
     <input type="submit" value="Lookup">
