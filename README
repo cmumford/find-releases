@@ -1,82 +1,9 @@
-Get list of all (lightweight) tags with
+Generates data for find-releases at https://storage.googleapis.com/chromium-find-releases-static/.
 
-  git show-ref --tags -d
+Current approach is to pull tags, git-rev list everything, and then git
+name-rev without branch-heads, and keep a cache. remotes/origin/HEAD, lkcr,
+etc. are not stored in the cache so that when new tags are made, commits are
+attributed to the correct release.
 
-This is map from release version numbers to sha1 that was head at that release.
-
-
-refs/branch-heads/1234
-
-contains the sha1 that represents the head revision for branch 1234.
-
-
-
-
-Chrome's history is completely linear. For example:
-
-  c:\src\cr\src>git find-releases f3a5670dd8d42b045d31625dde4a2561b471138f
-  commit f3a5670dd8d42b045d31625dde4a2561b471138f was:
-    initially in 56.0.2895.0
-    merged to 54.0.2840.68 (as 0aa889d7b478450c71133081216ccefbd645ba30)
-
-git name-rev will get us what we want for the initial commit:
-
-  c:\src\cr\src>git name-rev --tags --name-only f3a5670dd8d42b045d31625dde4a2561b471138f
-  56.0.2895.0~266
-
-  c:\src\cr\src>git show-ref 56.0.2895.0
-  615d08f637dcd9389f183f746a8f2495e7a924af refs/tags/56.0.2895.0
-
-
-
-
-for all refs/tags*
-  get tag^ which is the firs that will appear in the stream of a more recent tag
-
-log from all tags until encounting one in the set above, then we have the hashes
-that belong to that tag.
-
-this gives a map of hash->release
-
-
-
-c:\src\cr\src>git log 54.0.2840.67 --pretty=oneline
-40aafc78453967ec35cb2cf13f7d560d47bcfa07 Publish DEPS for Chromium 54.0.2840.67
-eaee34e3778176c186e2656a42f53108006a8c0f Incrementing VERSION to 54.0.2840.67
-303e38727fcf9eee56b7c7263ea1a490baaab88f Updating XTBs based on .GRDs from branch 2840
-e4d4c6e11c1facd664244a3ded38c0dde189ffa3 Allow input method activation when non-IME window is focused
-7674882c938670405fb7a29fd4f4431fa805a056 Incrementing VERSION to 54.0.2840.66
-
-
-c:\src\cr\src>git log 54.0.2840.68 --pretty=oneline
-e0f2d41abd25fcc8c4f6dcf3097a37ef6de2d693 Publish DEPS for Chromium 54.0.2840.68
-e5934e0f324e72f35dac7868c9b554a4295b2ceb Incrementing VERSION to 54.0.2840.68
-0aa889d7b478450c71133081216ccefbd645ba30 Signal chrome_elf to initialize crash reporting, rather than doing it in DllMain
-e5f09a72652bf4a361dc494229e331f8ca762969 [Merge-M54] arc: Don't show default Arc apps for managed users with Arc-disabled.
-cdd00e9c828ed19aff3c6baca623dd7153caee0a [Merge m54] Re-enable the QUIC v33 hacks. protected by FLAGS_quic_remove_v33_hacks2
-2ac51a5dd890c0944f4d689792319426fb5f9850 Disable WebUSB detector logic on Windows.
-389119fcb0c2906c964023d4585792af8b7c23cd [re-land in M54] Disallow file api access from processes that lack permissions for the scheme of the origin.
-eaee34e3778176c186e2656a42f53108006a8c0f Incrementing VERSION to 54.0.2840.67
-
-
-c:\src\cr\src>git log ^^^^54.0.2840.67 54.0.2840.68 --pretty=oneline
-e0f2d41abd25fcc8c4f6dcf3097a37ef6de2d693 Publish DEPS for Chromium 54.0.2840.68
-e5934e0f324e72f35dac7868c9b554a4295b2ceb Incrementing VERSION to 54.0.2840.68
-0aa889d7b478450c71133081216ccefbd645ba30 Signal chrome_elf to initialize crash reporting, rather than doing it in DllMain
-e5f09a72652bf4a361dc494229e331f8ca762969 [Merge-M54] arc: Don't show default Arc apps for managed users with Arc-disabled.
-cdd00e9c828ed19aff3c6baca623dd7153caee0a [Merge m54] Re-enable the QUIC v33 hacks. protected by FLAGS_quic_remove_v33_hacks2
-2ac51a5dd890c0944f4d689792319426fb5f9850 Disable WebUSB detector logic on Windows.
-389119fcb0c2906c964023d4585792af8b7c23cd [re-land in M54] Disallow file api access from processes that lack permissions for the scheme of the origin.
-
-(^^^^ because cmd and git.cmd :()
-
-So that will fairly quickly (?) get the list of commits for two tags.
-
-With a cache of tag->hash, it could update the list only if a tag was moved
-(does that even happen in practice?) and then we have a quick hash->release
-mapping.
-
-It would be nice to identify merges too.
-- grepping in commit message for 'cherry picked from ...' is what git
-  find-releases does, but apparently not everyone uses cherry-pick -x.
-- could try patch-id too, but i'm not sure how well that works.
+gen_static then generates a set of of partitioned html files by the first three
+digits of the commit prefix, which can be redirected to as /aaa.html#aaa2345...
