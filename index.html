@@ -1,13 +1,27 @@
 <!DOCTYPE html><html><head><style>body{font-family:'Helvetica','Arial',sans-serif;}a,code{font-family:'Monaco','Consolas',monospace;}</style><script>
-function HandleSubmit(e) {
-  var commit = document.getElementById('commit').value;
+function Redir(commit) {
   var prefix = commit.substr(0, 3);
   window.location = '/chromium-find-releases-static/' + prefix + '.html#' + commit;
+}
+function HandleSubmit(e) {
+  var commit = document.getElementById('commit').value;
+  Redir(commit);
   e.preventDefault();
   return false;
 }
+function Go() {
+  if (window.location.hash) {
+    var commit = window.location.hash.substring(1);
+    if (commit.length > 3) {
+      if (commit.startsWith("/")) {
+        commit = commit.substring(1);
+      }
+      Redir(commit);
+    }
+  }
+}
 </script>
-<body>
+<body onload="Go()">
   <h1>Find Releases</h1>
   <form onsubmit="HandleSubmit(event)">
     git SHA-1 commit:
