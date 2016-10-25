@@ -1,7 +1,29 @@
 <!DOCTYPE html><html><head><style>body{font-family:'Helvetica','Arial',sans-serif;}a,code{font-family:'Monaco','Consolas',monospace;}</style><script>
-function Redir(commit) {
+
+function RedirImpl(commit) {
   var prefix = commit.substr(0, 3);
   window.location = '/chromium-find-releases-static/' + prefix + '.html#' + commit;
+}
+
+function Redir(commit) {
+  var number_re = /^r([0-9]+)$/;
+  var match = number_re.exec(commit);
+  if (match) {
+    var commit_num = match[1];
+    function ReqListener() {
+      var json = JSON.parse(req.responseText);
+      if (json.hasOwnProperty('git_sha')) {
+        RedirImpl(json['git_sha'])
+      }
+    }
+
+    var req = new XMLHttpRequest();
+    req.addEventListener("load", ReqListener);
+    req.open("GET", "https://cr-rev.appspot.com/_ah/api/crrev/v1/redirect/" + commit_num);
+    req.send();
+  } else {
+    RedirImpl(commit);
+  }
 }
 function HandleSubmit(e) {
   var commit = document.getElementById('commit').value;
