@@ -32,7 +32,7 @@ function go() {
       }
       commit = full_commit;
     } else {
-      var commit_data = data[commit];
+      commit_data = data[commit];
     }
 
     if (commit_data) {
@@ -50,6 +50,8 @@ function go() {
         }
         html_data += '</ul>';
       }
+    } else {
+      html_data = 'No data found. If a valid commit was specified this means the commit is not yet in a release.';
     }
   } else {
     html_data = 'No commit specified.';
