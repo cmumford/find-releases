@@ -7,3 +7,12 @@ attributed to the correct release.
 
 gen_static then generates a set of of partitioned html files by the first three
 digits of the commit prefix, which can be redirected to as /aaa.html#aaa2345...
+
+
+Setup notes for self:
+When setting up a new machine to run cron:
+- follow directory creation/locations in update script
+- git branch -d master after fetch chromium
+- gcloud init to auth to storage bucket
+- crontab -e wants:
+*/10 * * * * /path/to/update-find-releases-static
