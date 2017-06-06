@@ -28,7 +28,6 @@ python ../../find-releases/build_hash_to_release_map2.py ../../find-releases-out
 python ../../find-releases/gen_static.py ../../find-releases-output/cache.pickle ../../find-releases-output/static
 
 # ... and we need the cloud sdk for gsutil.
-source '../../google-cloud-sdk/path.bash.inc'
 cd ../../find-releases-output/static
 gsutil -m rsync -d -r . gs://chromium-find-releases-static/
 
