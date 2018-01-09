@@ -12,6 +12,7 @@ git checkout origin/master
 # ... that's next to a chromium src tree named 'cr-find-rel'.
 cd ../cr-find-rel/src
 git fetch origin
+git fetch --tags
 git checkout origin/master
 
 # ... with depot_tools in the path.
