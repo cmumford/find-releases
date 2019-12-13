@@ -1,0 +1,9 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+./update-find-releases-static > last.log 2>&1
+if [ $? -ne 0 ]; then
+  cat last.log | ./mail.py --subject 'find-releases failed' --to 'scottmg@google.com'
+fi
