@@ -14,5 +14,6 @@ When setting up a new machine to run cron:
 - follow directory creation/locations in update script
 - git branch -d master after fetch chromium
 - gcloud init to auth to storage bucket
+- get client_id.json as mail.py wants
 - crontab -e wants:
-*/10 * * * * /path/to/update-find-releases-static
+*/10 * * * * /path/to/update-and-mail-on-failure
