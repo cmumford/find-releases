@@ -25,8 +25,8 @@ git checkout origin/master
 ulimit -s unlimited
 
 # ... output is stored beside both of those.
-python ../../find-releases/build_hash_to_release_map2.py ../../find-releases-output
-python ../../find-releases/gen_static.py ../../find-releases-output/cache.pickle ../../find-releases-output/static
+python2 ../../find-releases/build_hash_to_release_map2.py ../../find-releases-output
+python2 ../../find-releases/gen_static.py ../../find-releases-output/cache.pickle ../../find-releases-output/static
 
 # ... and we need the cloud sdk for gsutil.
 cd ../../find-releases-output/static
