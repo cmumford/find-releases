@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # From https://github.com/nico/hack/blob/master/mail.py
 
