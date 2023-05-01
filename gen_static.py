@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cPickle
+import _pickle as cPickle
 import collections
 import json
 import os
@@ -20,7 +20,7 @@ def WriteIfChanged(output_path, contents):
       old_contents = f.read()
   if old_contents != contents:
     with open(output_path, 'wb') as f:
-      f.write(contents)
+      f.write(contents.encode(sys.stdout.encoding))
     return True
   return False
 
@@ -30,18 +30,18 @@ def main(args):
   pickle = args[0]
   ROOT = args[1]
 
-  print 'loading...'
+  print('loading...')
   try:
     with open(pickle, 'rb') as f:
       cache = cPickle.load(f)
   except:
-    print >>sys.stderr, 'couldn\'t load cached data'
+    print('couldn\'t load cached data', file=sys.stderr)
     return 1
 
   sha1_to_release = cache['sha1_to_release']
   commit_merged_as = cache['commit_merged_as']
 
-  print 'partitioning...'
+  print('partitioning...')
   partitioned = {}
   for commit in sorted(sha1_to_release):
     bucket = commit[0:3]
@@ -62,9 +62,9 @@ def main(args):
   if not os.path.exists(ROOT):
     os.makedirs(ROOT)
 
-  print 'generating data files...'
+  print('generating data files...')
   count = 0
-  for bucket, commits in partitioned.iteritems():
+  for bucket, commits in partitioned.items():
     data_obj = collections.OrderedDict()
     for commit in sorted(commits):
       data_obj[commit] = [sha1_to_release[commit], []]
@@ -77,7 +77,7 @@ def main(args):
                                                 separators=(',',':')))
     if WriteIfChanged(output_path, to_write):
       count += 1
-  print 'updated %d files.' % count
+  print('updated %d files.' % count)
 
   shutil.copy2(os.path.join(SELF_DIR, 'handler.js'),
                os.path.join(ROOT, 'handler.js'))
